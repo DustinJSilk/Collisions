@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _Result = require('./Result');
 
 var _Result2 = _interopRequireDefault(_Result);
@@ -14,19 +16,27 @@ var _SAT2 = _interopRequireDefault(_SAT);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /**
  * The base class for bodies used to detect collisions
  * @class
  * @protected
  */
-class Body {
+var Body = function () {
 	/**
   * @constructor
   * @param {Number} [x = 0] The starting X coordinate
   * @param {Number} [y = 0] The starting Y coordinate
   * @param {Number} [padding = 0] The amount to pad the bounding volume when testing for potential collisions
   */
-	constructor(x = 0, y = 0, padding = 0) {
+	function Body() {
+		var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+		var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+		var padding = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+		_classCallCheck(this, Body);
+
 		/**
    * @desc The X coordinate of the body
    * @type {Number}
@@ -86,47 +96,71 @@ class Body {
   * @param {Boolean} [aabb = true] Set to false to skip the AABB test (useful if you use your own potential collision heuristic)
   * @returns {Boolean}
   */
-	collides(target, result = null, aabb = true) {
-		return (0, _SAT2.default)(this, target, result, aabb);
-	}
 
-	/**
-  * Returns a list of potential collisions
-  * @returns {Array<Body>}
-  */
-	potentials() {
-		const bvh = this._bvh;
 
-		if (bvh === null) {
-			throw new Error('Body does not belong to a collision system');
+	_createClass(Body, [{
+		key: 'collides',
+		value: function collides(target) {
+			var result = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+			var aabb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+			return (0, _SAT2.default)(this, target, result, aabb);
 		}
 
-		return bvh.potentials(this);
-	}
+		/**
+   * Returns a list of potential collisions
+   * @returns {Array<Body>}
+   */
 
-	/**
-  * Removes the body from its current collision system
-  */
-	remove() {
-		const bvh = this._bvh;
+	}, {
+		key: 'potentials',
+		value: function potentials() {
+			var bvh = this._bvh;
 
-		if (bvh) {
-			bvh.remove(this, false);
+			if (bvh === null) {
+				throw new Error('Body does not belong to a collision system');
+			}
+
+			return bvh.potentials(this);
 		}
-	}
 
-	/**
-  * Creates a {@link Result} used to collect the detailed results of a collision test
-  */
-	createResult() {
-		return new _Result2.default();
-	}
+		/**
+   * Removes the body from its current collision system
+   */
 
-	/**
-  * Creates a Result used to collect the detailed results of a collision test
-  */
-	static createResult() {
-		return new _Result2.default();
-	}
-}exports.default = Body;
+	}, {
+		key: 'remove',
+		value: function remove() {
+			var bvh = this._bvh;
+
+			if (bvh) {
+				bvh.remove(this, false);
+			}
+		}
+
+		/**
+   * Creates a {@link Result} used to collect the detailed results of a collision test
+   */
+
+	}, {
+		key: 'createResult',
+		value: function createResult() {
+			return new _Result2.default();
+		}
+
+		/**
+   * Creates a Result used to collect the detailed results of a collision test
+   */
+
+	}], [{
+		key: 'createResult',
+		value: function createResult() {
+			return new _Result2.default();
+		}
+	}]);
+
+	return Body;
+}();
+
+exports.default = Body;
 ;

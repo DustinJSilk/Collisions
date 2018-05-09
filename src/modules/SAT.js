@@ -13,11 +13,14 @@ exports.default = SAT;
  * @param {Boolean} [aabb = true] Set to false to skip the AABB test (useful if you use your own collision heuristic)
  * @returns {Boolean}
  */
-function SAT(a, b, result = null, aabb = true) {
-	const a_polygon = a._polygon;
-	const b_polygon = b._polygon;
+function SAT(a, b) {
+	var result = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var aabb = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-	let collision = false;
+	var a_polygon = a._polygon;
+	var b_polygon = b._polygon;
+
+	var collision = false;
 
 	if (result) {
 		result.a = a;
@@ -66,23 +69,23 @@ function SAT(a, b, result = null, aabb = true) {
  * @param {Circle|Polygon|Point} b The target body to test against
  */
 function aabbAABB(a, b) {
-	const a_polygon = a._polygon;
-	const a_x = a_polygon ? 0 : a.x;
-	const a_y = a_polygon ? 0 : a.y;
-	const a_radius = a_polygon ? 0 : a.radius * a.scale;
-	const a_min_x = a_polygon ? a._min_x : a_x - a_radius;
-	const a_min_y = a_polygon ? a._min_y : a_y - a_radius;
-	const a_max_x = a_polygon ? a._max_x : a_x + a_radius;
-	const a_max_y = a_polygon ? a._max_y : a_y + a_radius;
+	var a_polygon = a._polygon;
+	var a_x = a_polygon ? 0 : a.x;
+	var a_y = a_polygon ? 0 : a.y;
+	var a_radius = a_polygon ? 0 : a.radius * a.scale;
+	var a_min_x = a_polygon ? a._min_x : a_x - a_radius;
+	var a_min_y = a_polygon ? a._min_y : a_y - a_radius;
+	var a_max_x = a_polygon ? a._max_x : a_x + a_radius;
+	var a_max_y = a_polygon ? a._max_y : a_y + a_radius;
 
-	const b_polygon = b._polygon;
-	const b_x = b_polygon ? 0 : b.x;
-	const b_y = b_polygon ? 0 : b.y;
-	const b_radius = b_polygon ? 0 : b.radius * b.scale;
-	const b_min_x = b_polygon ? b._min_x : b_x - b_radius;
-	const b_min_y = b_polygon ? b._min_y : b_y - b_radius;
-	const b_max_x = b_polygon ? b._max_x : b_x + b_radius;
-	const b_max_y = b_polygon ? b._max_y : b_y + b_radius;
+	var b_polygon = b._polygon;
+	var b_x = b_polygon ? 0 : b.x;
+	var b_y = b_polygon ? 0 : b.y;
+	var b_radius = b_polygon ? 0 : b.radius * b.scale;
+	var b_min_x = b_polygon ? b._min_x : b_x - b_radius;
+	var b_min_y = b_polygon ? b._min_y : b_y - b_radius;
+	var b_max_x = b_polygon ? b._max_x : b_x + b_radius;
+	var b_max_y = b_polygon ? b._max_y : b_y + b_radius;
 
 	return a_min_x < b_max_x && a_min_y < b_max_y && a_max_x > b_min_x && a_max_y > b_min_y;
 }
@@ -94,29 +97,31 @@ function aabbAABB(a, b) {
  * @param {Result} [result = null] A Result object on which to store information about the collision
  * @returns {Boolean}
  */
-function polygonPolygon(a, b, result = null) {
-	const a_count = a._coords.length;
-	const b_count = b._coords.length;
+function polygonPolygon(a, b) {
+	var result = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+	var a_count = a._coords.length;
+	var b_count = b._coords.length;
 
 	// Handle points specially
 	if (a_count === 2 && b_count === 2) {
-		const a_coords = a._coords;
-		const b_coords = b._coords;
+		var _a_coords = a._coords;
+		var _b_coords = b._coords;
 
 		if (result) {
 			result.overlap = 0;
 		}
 
-		return a_coords[0] === b_coords[0] && a_coords[1] === b_coords[1];
+		return _a_coords[0] === _b_coords[0] && _a_coords[1] === _b_coords[1];
 	}
 
-	const a_coords = a._coords;
-	const b_coords = b._coords;
-	const a_normals = a._normals;
-	const b_normals = b._normals;
+	var a_coords = a._coords;
+	var b_coords = b._coords;
+	var a_normals = a._normals;
+	var b_normals = b._normals;
 
 	if (a_count > 2) {
-		for (let ix = 0, iy = 1; ix < a_count; ix += 2, iy += 2) {
+		for (var ix = 0, iy = 1; ix < a_count; ix += 2, iy += 2) {
 			if (separatingAxis(a_coords, b_coords, a_normals[ix], a_normals[iy], result)) {
 				return false;
 			}
@@ -124,8 +129,8 @@ function polygonPolygon(a, b, result = null) {
 	}
 
 	if (b_count > 2) {
-		for (let ix = 0, iy = 1; ix < b_count; ix += 2, iy += 2) {
-			if (separatingAxis(a_coords, b_coords, b_normals[ix], b_normals[iy], result)) {
+		for (var _ix = 0, _iy = 1; _ix < b_count; _ix += 2, _iy += 2) {
+			if (separatingAxis(a_coords, b_coords, b_normals[_ix], b_normals[_iy], result)) {
 				return false;
 			}
 		}
@@ -142,35 +147,38 @@ function polygonPolygon(a, b, result = null) {
  * @param {Boolean} [reverse = false] Set to true to reverse a and b in the result parameter when testing circle->polygon instead of polygon->circle
  * @returns {Boolean}
  */
-function polygonCircle(a, b, result = null, reverse = false) {
-	const a_coords = a._coords;
-	const a_edges = a._edges;
-	const a_normals = a._normals;
-	const b_x = b.x;
-	const b_y = b.y;
-	const b_radius = b.radius * b.scale;
-	const b_radius2 = b_radius * 2;
-	const radius_squared = b_radius * b_radius;
-	const count = a_coords.length;
+function polygonCircle(a, b) {
+	var result = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	var reverse = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-	let a_in_b = true;
-	let b_in_a = true;
-	let overlap = null;
-	let overlap_x = 0;
-	let overlap_y = 0;
+	var a_coords = a._coords;
+	var a_edges = a._edges;
+	var a_normals = a._normals;
+	var b_x = b.x;
+	var b_y = b.y;
+	var b_radius = b.radius * b.scale;
+	var b_radius2 = b_radius * 2;
+	var radius_squared = b_radius * b_radius;
+	var count = a_coords.length;
+
+	var a_in_b = true;
+	var b_in_a = true;
+	var overlap = null;
+	var overlap_x = 0;
+	var overlap_y = 0;
 
 	// Handle points specially
 	if (count === 2) {
-		const coord_x = b_x - a_coords[0];
-		const coord_y = b_y - a_coords[1];
-		const length_squared = coord_x * coord_x + coord_y * coord_y;
+		var coord_x = b_x - a_coords[0];
+		var coord_y = b_y - a_coords[1];
+		var length_squared = coord_x * coord_x + coord_y * coord_y;
 
 		if (length_squared > radius_squared) {
 			return false;
 		}
 
 		if (result) {
-			const length = Math.sqrt(length_squared);
+			var length = Math.sqrt(length_squared);
 
 			overlap = b_radius - length;
 			overlap_x = coord_x / length;
@@ -178,70 +186,70 @@ function polygonCircle(a, b, result = null, reverse = false) {
 			b_in_a = false;
 		}
 	} else {
-		for (let ix = 0, iy = 1; ix < count; ix += 2, iy += 2) {
-			const coord_x = b_x - a_coords[ix];
-			const coord_y = b_y - a_coords[iy];
-			const edge_x = a_edges[ix];
-			const edge_y = a_edges[iy];
-			const dot = coord_x * edge_x + coord_y * edge_y;
-			const region = dot < 0 ? -1 : dot > edge_x * edge_x + edge_y * edge_y ? 1 : 0;
+		for (var ix = 0, iy = 1; ix < count; ix += 2, iy += 2) {
+			var _coord_x = b_x - a_coords[ix];
+			var _coord_y = b_y - a_coords[iy];
+			var edge_x = a_edges[ix];
+			var edge_y = a_edges[iy];
+			var dot = _coord_x * edge_x + _coord_y * edge_y;
+			var region = dot < 0 ? -1 : dot > edge_x * edge_x + edge_y * edge_y ? 1 : 0;
 
-			let tmp_overlapping = false;
-			let tmp_overlap = 0;
-			let tmp_overlap_x = 0;
-			let tmp_overlap_y = 0;
+			var tmp_overlapping = false;
+			var tmp_overlap = 0;
+			var tmp_overlap_x = 0;
+			var tmp_overlap_y = 0;
 
-			if (result && a_in_b && coord_x * coord_x + coord_y * coord_y > radius_squared) {
+			if (result && a_in_b && _coord_x * _coord_x + _coord_y * _coord_y > radius_squared) {
 				a_in_b = false;
 			}
 
 			if (region) {
-				const left = region === -1;
-				const other_x = left ? ix === 0 ? count - 2 : ix - 2 : ix === count - 2 ? 0 : ix + 2;
-				const other_y = other_x + 1;
-				const coord2_x = b_x - a_coords[other_x];
-				const coord2_y = b_y - a_coords[other_y];
-				const edge2_x = a_edges[other_x];
-				const edge2_y = a_edges[other_y];
-				const dot2 = coord2_x * edge2_x + coord2_y * edge2_y;
-				const region2 = dot2 < 0 ? -1 : dot2 > edge2_x * edge2_x + edge2_y * edge2_y ? 1 : 0;
+				var left = region === -1;
+				var other_x = left ? ix === 0 ? count - 2 : ix - 2 : ix === count - 2 ? 0 : ix + 2;
+				var other_y = other_x + 1;
+				var coord2_x = b_x - a_coords[other_x];
+				var coord2_y = b_y - a_coords[other_y];
+				var edge2_x = a_edges[other_x];
+				var edge2_y = a_edges[other_y];
+				var dot2 = coord2_x * edge2_x + coord2_y * edge2_y;
+				var region2 = dot2 < 0 ? -1 : dot2 > edge2_x * edge2_x + edge2_y * edge2_y ? 1 : 0;
 
 				if (region2 === -region) {
-					const target_x = left ? coord_x : coord2_x;
-					const target_y = left ? coord_y : coord2_y;
-					const length_squared = target_x * target_x + target_y * target_y;
+					var target_x = left ? _coord_x : coord2_x;
+					var target_y = left ? _coord_y : coord2_y;
+					var _length_squared = target_x * target_x + target_y * target_y;
 
-					if (length_squared > radius_squared) {
+					if (_length_squared > radius_squared) {
 						return false;
 					}
 
 					if (result) {
-						const length = Math.sqrt(length_squared);
+						var _length = Math.sqrt(_length_squared);
 
 						tmp_overlapping = true;
-						tmp_overlap = b_radius - length;
-						tmp_overlap_x = target_x / length;
-						tmp_overlap_y = target_y / length;
+						tmp_overlap = b_radius - _length;
+						tmp_overlap_x = target_x / _length;
+						tmp_overlap_y = target_y / _length;
 						b_in_a = false;
 					}
 				}
 			} else {
-				const normal_x = a_normals[ix];
-				const normal_y = a_normals[iy];
-				const length = coord_x * normal_x + coord_y * normal_y;
-				const absolute_length = length < 0 ? -length : length;
+				var normal_x = a_normals[ix];
+				var normal_y = a_normals[iy];
+				var _length2 = _coord_x * normal_x + _coord_y * normal_y;
+				var absolute_length = _length2 < 0 ? -_length2 : _length2;
 
-				if (length > 0 && absolute_length > b_radius) {
+				if (_length2 > 0 && absolute_length > b_radius) {
 					return false;
 				}
 
 				if (result) {
 					tmp_overlapping = true;
-					tmp_overlap = b_radius - length;
+					tmp_overlap = b_radius - _length2;
 					tmp_overlap_x = normal_x;
 					tmp_overlap_y = normal_y;
 
-					if (b_in_a && length >= 0 || tmp_overlap < b_radius2) {
+					if (b_in_a && _length2 >= 0 || tmp_overlap < b_radius2) {
 						b_in_a = false;
 					}
 				}
@@ -273,20 +281,22 @@ function polygonCircle(a, b, result = null, reverse = false) {
  * @param {Result} [result = null] A Result object on which to store information about the collision
  * @returns {Boolean}
  */
-function circleCircle(a, b, result = null) {
-	const a_radius = a.radius * a.scale;
-	const b_radius = b.radius * b.scale;
-	const difference_x = b.x - a.x;
-	const difference_y = b.y - a.y;
-	const radius_sum = a_radius + b_radius;
-	const length_squared = difference_x * difference_x + difference_y * difference_y;
+function circleCircle(a, b) {
+	var result = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+	var a_radius = a.radius * a.scale;
+	var b_radius = b.radius * b.scale;
+	var difference_x = b.x - a.x;
+	var difference_y = b.y - a.y;
+	var radius_sum = a_radius + b_radius;
+	var length_squared = difference_x * difference_x + difference_y * difference_y;
 
 	if (length_squared > radius_sum * radius_sum) {
 		return false;
 	}
 
 	if (result) {
-		const length = Math.sqrt(length_squared);
+		var length = Math.sqrt(length_squared);
 
 		result.a_in_b = a_radius <= b_radius && length <= b_radius - a_radius;
 		result.b_in_a = b_radius <= a_radius && length <= a_radius - b_radius;
@@ -307,21 +317,23 @@ function circleCircle(a, b, result = null) {
  * @param {Result} [result = null] A Result object on which to store information about the collision
  * @returns {Boolean}
  */
-function separatingAxis(a_coords, b_coords, x, y, result = null) {
-	const a_count = a_coords.length;
-	const b_count = b_coords.length;
+function separatingAxis(a_coords, b_coords, x, y) {
+	var result = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+	var a_count = a_coords.length;
+	var b_count = b_coords.length;
 
 	if (!a_count || !b_count) {
 		return true;
 	}
 
-	let a_start = null;
-	let a_end = null;
-	let b_start = null;
-	let b_end = null;
+	var a_start = null;
+	var a_end = null;
+	var b_start = null;
+	var b_end = null;
 
-	for (let ix = 0, iy = 1; ix < a_count; ix += 2, iy += 2) {
-		const dot = a_coords[ix] * x + a_coords[iy] * y;
+	for (var ix = 0, iy = 1; ix < a_count; ix += 2, iy += 2) {
+		var dot = a_coords[ix] * x + a_coords[iy] * y;
 
 		if (a_start === null || a_start > dot) {
 			a_start = dot;
@@ -332,15 +344,15 @@ function separatingAxis(a_coords, b_coords, x, y, result = null) {
 		}
 	}
 
-	for (let ix = 0, iy = 1; ix < b_count; ix += 2, iy += 2) {
-		const dot = b_coords[ix] * x + b_coords[iy] * y;
+	for (var _ix2 = 0, _iy2 = 1; _ix2 < b_count; _ix2 += 2, _iy2 += 2) {
+		var _dot = b_coords[_ix2] * x + b_coords[_iy2] * y;
 
-		if (b_start === null || b_start > dot) {
-			b_start = dot;
+		if (b_start === null || b_start > _dot) {
+			b_start = _dot;
 		}
 
-		if (b_end === null || b_end < dot) {
-			b_end = dot;
+		if (b_end === null || b_end < _dot) {
+			b_end = _dot;
 		}
 	}
 
@@ -349,7 +361,7 @@ function separatingAxis(a_coords, b_coords, x, y, result = null) {
 	}
 
 	if (result) {
-		let overlap = 0;
+		var overlap = 0;
 
 		if (a_start < b_start) {
 			result.a_in_b = false;
@@ -358,8 +370,8 @@ function separatingAxis(a_coords, b_coords, x, y, result = null) {
 				overlap = a_end - b_start;
 				result.b_in_a = false;
 			} else {
-				const option1 = a_end - b_start;
-				const option2 = b_end - a_start;
+				var option1 = a_end - b_start;
+				var option2 = b_end - a_start;
 
 				overlap = option1 < option2 ? option1 : -option2;
 			}
@@ -370,18 +382,18 @@ function separatingAxis(a_coords, b_coords, x, y, result = null) {
 				overlap = a_start - b_end;
 				result.a_in_b = false;
 			} else {
-				const option1 = a_end - b_start;
-				const option2 = b_end - a_start;
+				var _option = a_end - b_start;
+				var _option2 = b_end - a_start;
 
-				overlap = option1 < option2 ? option1 : -option2;
+				overlap = _option < _option2 ? _option : -_option2;
 			}
 		}
 
-		const current_overlap = result.overlap;
-		const absolute_overlap = overlap < 0 ? -overlap : overlap;
+		var current_overlap = result.overlap;
+		var absolute_overlap = overlap < 0 ? -overlap : overlap;
 
 		if (current_overlap === null || current_overlap > absolute_overlap) {
-			const sign = overlap < 0 ? -1 : 1;
+			var sign = overlap < 0 ? -1 : 1;
 
 			result.overlap = absolute_overlap;
 			result.overlap_x = x * sign;
